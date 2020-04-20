@@ -4,7 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Service;
+
+import com.fintech.becarsfintech.controllers.CarsController;
 import com.fintech.becarsfintech.dto.CarsDto;
 import com.fintech.becarsfintech.exceptions.ResourceNotFoundException;
 import com.fintech.becarsfintech.models.Cars;
@@ -22,7 +27,7 @@ public class CarsServiceImpl implements CarsService {
 	 * @return Cars
 	 */
 	@Override
-	public Cars create(CarsDto carsDto) throws Exception {
+	public Resource<Cars> create(CarsDto carsDto) throws Exception {
 		
 		Cars newCar = new Cars();
 		newCar.setName(carsDto.getName());
@@ -32,7 +37,12 @@ public class CarsServiceImpl implements CarsService {
 		newCar.setManufactureYear(carsDto.getManufactureYear());
 		newCar.setCreatedAt(LocalDateTime.now());
 		newCar.setUpdatedAt(LocalDateTime.now());
-		return carsRepository.save(newCar);
+		carsRepository.save(newCar);
+		// adding link for next step
+		Resource<Cars> resource = new Resource<Cars>(newCar);
+		Link link = ControllerLinkBuilder.linkTo(CarsController.class).slash("/get-by-name/"+newCar.getName()).withSelfRel();
+		resource.add(link);
+		return resource;
 	}
 	
 	/**

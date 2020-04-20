@@ -3,6 +3,9 @@ package com.fintech.becarsfintech.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +41,13 @@ public class CarsController {
 	  @ApiOperation(value = "create car")
 	  @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
 	  public ApiResponse<Cars> create(@RequestBody CarsDto carsDto) throws Exception {
+		  
+//		  Cars newCar = carsService.create(carsDto);
+//		  Resource<Cars> resource = new Resource<Cars>(newCar);
+//		  Link link = ControllerLinkBuilder.linkTo(CarsController.class).slash(newCar.getName()).withSelfRel();
+//		  resource.add(link);
+//		  return resource;
+		  
 		  return new ApiResponse<Cars>(200, "success",carsService.create(carsDto));
 	  }
 	  
