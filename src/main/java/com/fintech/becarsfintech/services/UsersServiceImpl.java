@@ -37,6 +37,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service(value = "userService")
 public class UsersServiceImpl implements UserDetailsService, UsersService {
 	
+	private static final Logger LOGGER=LoggerFactory.getLogger(UsersServiceImpl.class);
+	
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -55,8 +57,10 @@ public class UsersServiceImpl implements UserDetailsService, UsersService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByUserName(username);
 		if (user == null) {
+			LOGGER.error("username doesn't exist");
 			throw new UsernameNotFoundException("username doesn't exist");
 		}
+		LOGGER.info(user.getUserName() + "is accessing api");
 		return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(),
 				getAuthority(user));
 
@@ -84,9 +88,9 @@ public class UsersServiceImpl implements UserDetailsService, UsersService {
 		User user = userRepository.findByUserName(userName);
 
 		if (user == null) {
+			LOGGER.error("User Not found :" + userName);
 			throw new ResourceNotFoundException("User Not found :" + userName);
 		}
-		System.out.println(user.getUserName());
 		return user;
 	}
 	
@@ -110,6 +114,7 @@ public class UsersServiceImpl implements UserDetailsService, UsersService {
 		
 		//save user
 		User newUser = saveUser(registerDto);
+		LOGGER.error("User is registered :" + newUser.getUserName());
 		return newUser;
 	}
 	

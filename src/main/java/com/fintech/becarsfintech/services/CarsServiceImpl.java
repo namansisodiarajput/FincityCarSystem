@@ -2,13 +2,13 @@ package com.fintech.becarsfintech.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Service;
-
 import com.fintech.becarsfintech.controllers.CarsController;
 import com.fintech.becarsfintech.dto.CarsDto;
 import com.fintech.becarsfintech.exceptions.ResourceNotFoundException;
@@ -17,6 +17,8 @@ import com.fintech.becarsfintech.repositories.CarsRepository;
 
 @Service(value = "carsService")
 public class CarsServiceImpl implements CarsService {
+	
+	private static final Logger LOGGER=LoggerFactory.getLogger(CarsServiceImpl.class);
 	
 	@Autowired
 	private CarsRepository carsRepository;
@@ -38,6 +40,7 @@ public class CarsServiceImpl implements CarsService {
 		newCar.setCreatedAt(LocalDateTime.now());
 		newCar.setUpdatedAt(LocalDateTime.now());
 		carsRepository.save(newCar);
+		LOGGER.info("car is created -"+newCar.getName());
 		// adding link for next step
 		Resource<Cars> resource = new Resource<Cars>(newCar);
 		Link link = ControllerLinkBuilder.linkTo(CarsController.class).slash("/get-by-name/"+newCar.getName()).withSelfRel();
@@ -63,6 +66,7 @@ public class CarsServiceImpl implements CarsService {
 		existingCar.setManufactureName(carsDto.getManufactureName());
 		existingCar.setManufactureYear(carsDto.getManufactureYear());
 		existingCar.setUpdatedAt(LocalDateTime.now());
+		LOGGER.info(existingCar.getName()+" is updated");
 		return carsRepository.save(existingCar);
 	}
 	
@@ -74,6 +78,7 @@ public class CarsServiceImpl implements CarsService {
 	@Override
 	public Cars get(long id) throws Exception {
 		// return car if found otherwise throw error not found
+		LOGGER.info("car with id - "+ id +" is retrieved");
 		return carsRepository.findById(id).get();
 	}
 	
@@ -86,6 +91,7 @@ public class CarsServiceImpl implements CarsService {
 	public String delete(long id) throws Exception {
 		// return car if found otherwise throw error not found
 		Cars existingCar = carsRepository.findById(id).get();
+		LOGGER.info("car with id - "+ id +" is deleted");
 		carsRepository.delete(existingCar);
 		return "deleted successful";
 	}
@@ -96,7 +102,7 @@ public class CarsServiceImpl implements CarsService {
 	 */
 	@Override
 	public List<Cars> listAll() throws Exception {
-		// return car if found otherwise throw error not found
+		LOGGER.info("list of car is retrived");
 		return carsRepository.findAll();
 	}
 	
@@ -109,8 +115,10 @@ public class CarsServiceImpl implements CarsService {
 		// return car if found otherwise throw error not found
 		List<Cars> existingCar = carsRepository.findByName(name);
 		if(existingCar == null) {
+			LOGGER.error("Car with" +  name +"doesn't exist");
 			throw new ResourceNotFoundException("Car with" +  name +"doesn't exist");
 		}
+		LOGGER.info("Car with" +  name +"is retrived");
 		return existingCar;
 	}
 	
@@ -120,6 +128,7 @@ public class CarsServiceImpl implements CarsService {
 	 */
 	@Override
 	public List<Cars> findByManufactureName(String manufactureName) throws Exception {
+		LOGGER.info("Car with mfname - " +  manufactureName +"is retrived");
 		return carsRepository.findByManufactureName(manufactureName);
 	}
 	
@@ -129,6 +138,7 @@ public class CarsServiceImpl implements CarsService {
 	 */
 	@Override
 	public List<Cars> findByModel(String model) throws Exception {
+		LOGGER.info("Car with model - " +  model +"is retrived");
 		return carsRepository.findByModel(model);
 	}
 	
@@ -138,6 +148,7 @@ public class CarsServiceImpl implements CarsService {
 	 */
 	@Override
 	public List<Cars> findByManufactureYear(String manufactureYear) throws Exception {
+		LOGGER.info("Car with mfyear - " +  manufactureYear +"is retrived");
 		return carsRepository.findByManufactureYear(manufactureYear);
 	}
 	
@@ -147,6 +158,7 @@ public class CarsServiceImpl implements CarsService {
 	 */
 	@Override
 	public List<Cars> findByColor(String color) throws Exception {
+		LOGGER.info("Car with color - " +  color +"is retrived");
 		return carsRepository.findByColor(color);
 	}
 	
